@@ -4,45 +4,48 @@
  * CUSTOMIZE: Brand Colors
  * Update these CSS variables to match your client's brand colors.
  * All components use these variables for consistent theming.
+ * 
+ * The --theme-* variables are the source of truth.
+ * The @theme block maps them to Tailwind utility classes.
  */
 :root {
   /* Primary brand color - buttons, links, accents */
-  --color-primary: #3B82F6;
-  --color-primary-hover: #2563EB;
-  --color-primary-foreground: #FFFFFF;
+  --theme-primary: #3B82F6;
+  --theme-primary-hover: #2563EB;
+  --theme-primary-foreground: #FFFFFF;
 
   /* Secondary color - backgrounds, subtle elements */
-  --color-secondary: #1E293B;
-  --color-secondary-hover: #334155;
-  --color-secondary-foreground: #FFFFFF;
+  --theme-secondary: #1E293B;
+  --theme-secondary-hover: #334155;
+  --theme-secondary-foreground: #FFFFFF;
 
   /* Accent color - highlights, badges, success states */
-  --color-accent: #10B981;
-  --color-accent-hover: #059669;
-  --color-accent-foreground: #FFFFFF;
+  --theme-accent: #10B981;
+  --theme-accent-hover: #059669;
+  --theme-accent-foreground: #FFFFFF;
 
   /* Background colors */
-  --color-background: #FFFFFF;
-  --color-foreground: #0F172A;
+  --theme-background: #FFFFFF;
+  --theme-foreground: #0F172A;
 
   /* Muted elements */
-  --color-muted: #F1F5F9;
-  --color-muted-foreground: #64748B;
+  --theme-muted: #F1F5F9;
+  --theme-muted-foreground: #64748B;
 
   /* Border color */
-  --color-border: #E2E8F0;
+  --theme-border: #E2E8F0;
 
   /* Card backgrounds */
-  --color-card: #FFFFFF;
-  --color-card-foreground: #0F172A;
+  --theme-card: #FFFFFF;
+  --theme-card-foreground: #0F172A;
 
   /* Destructive/error states */
-  --color-destructive: #EF4444;
-  --color-destructive-foreground: #FFFFFF;
+  --theme-destructive: #EF4444;
+  --theme-destructive-foreground: #FFFFFF;
 
   /* Input and form elements */
-  --color-input: #E2E8F0;
-  --color-ring: #3B82F6;
+  --theme-input: #CBD5E1;
+  --theme-ring: #3B82F6;
 
   /* Border radius */
   --radius: 0.5rem;
@@ -50,35 +53,35 @@
 
 /* Tailwind v4 theme configuration */
 @theme inline {
-  /* Colors mapped to CSS variables */
-  --color-primary: var(--color-primary);
-  --color-primary-hover: var(--color-primary-hover);
-  --color-primary-foreground: var(--color-primary-foreground);
+  /* Colors mapped from --theme-* CSS variables */
+  --color-primary: var(--theme-primary);
+  --color-primary-hover: var(--theme-primary-hover);
+  --color-primary-foreground: var(--theme-primary-foreground);
 
-  --color-secondary: var(--color-secondary);
-  --color-secondary-hover: var(--color-secondary-hover);
-  --color-secondary-foreground: var(--color-secondary-foreground);
+  --color-secondary: var(--theme-secondary);
+  --color-secondary-hover: var(--theme-secondary-hover);
+  --color-secondary-foreground: var(--theme-secondary-foreground);
 
-  --color-accent: var(--color-accent);
-  --color-accent-hover: var(--color-accent-hover);
-  --color-accent-foreground: var(--color-accent-foreground);
+  --color-accent: var(--theme-accent);
+  --color-accent-hover: var(--theme-accent-hover);
+  --color-accent-foreground: var(--theme-accent-foreground);
 
-  --color-background: var(--color-background);
-  --color-foreground: var(--color-foreground);
+  --color-background: var(--theme-background);
+  --color-foreground: var(--theme-foreground);
 
-  --color-muted: var(--color-muted);
-  --color-muted-foreground: var(--color-muted-foreground);
+  --color-muted: var(--theme-muted);
+  --color-muted-foreground: var(--theme-muted-foreground);
 
-  --color-border: var(--color-border);
+  --color-border: var(--theme-border);
 
-  --color-card: var(--color-card);
-  --color-card-foreground: var(--color-card-foreground);
+  --color-card: var(--theme-card);
+  --color-card-foreground: var(--theme-card-foreground);
 
-  --color-destructive: var(--color-destructive);
-  --color-destructive-foreground: var(--color-destructive-foreground);
+  --color-destructive: var(--theme-destructive);
+  --color-destructive-foreground: var(--theme-destructive-foreground);
 
-  --color-input: var(--color-input);
-  --color-ring: var(--color-ring);
+  --color-input: var(--theme-input);
+  --color-ring: var(--theme-ring);
 
   /* Font families */
   --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
@@ -93,8 +96,8 @@
 
 /* Base styles */
 body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  background-color: var(--theme-background);
+  color: var(--theme-foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -106,7 +109,7 @@ body {
 }
 
 .focus-ring:focus-visible {
-  outline: 2px solid var(--color-ring);
+  outline: 2px solid var(--theme-ring);
   outline-offset: 2px;
 }
 
@@ -122,14 +125,14 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-muted);
+  background: var(--theme-muted);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-muted-foreground);
+  background: var(--theme-muted-foreground);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-secondary);
+  background: var(--theme-secondary);
 }

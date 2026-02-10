@@ -1,55 +1,41 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
-import GitHub from "next-auth/providers/github";
-import Google from "next-auth/providers/google";
 import { prisma } from "@/lib/prisma";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
-    // GitHub OAuth (optional - requires GITHUB_ID and GITHUB_SECRET)
-    ...(process.env.GITHUB_ID && process.env.GITHUB_SECRET
-      ? [
-          GitHub({
-            clientId: process.env.GITHUB_ID,
-            clientSecret: process.env.GITHUB_SECRET,
-          }),
-        ]
-      : []),
-    // Google OAuth (optional - requires GOOGLE_ID and GOOGLE_SECRET)
-    ...(process.env.GOOGLE_ID && process.env.GOOGLE_SECRET
-      ? [
-          Google({
-            clientId: process.env.GOOGLE_ID,
-            clientSecret: process.env.GOOGLE_SECRET,
-          }),
-        ]
-      : []),
-    // Credentials provider for demo/development
+    // Email + password credentials provider
     Credentials({
-      name: "Demo Account",
+      name: "Credentials",
       credentials: {
         email: {
           label: "Email",
           type: "email",
-          placeholder: "demo@lifeos.app",
+          placeholder: "you@example.com",
+        },
+        password: {
+          label: "Password",
+          type: "password",
         },
       },
       async authorize(credentials) {
-        // For demo purposes, create or find a demo user
-        if (!credentials?.email) return null;
+        if (!credentials?.email || !credentials?.password) return null;
 
         const email = credentials.email as string;
+        const password = credentials.password as string;
 
         console.log("[Auth] Looking up user:", email);
 
-        // Find or create the user
+        // Find existing user
         let user = await prisma.user.findUnique({
           where: { email },
         });
 
         if (!user) {
+          // For demo: auto-create user on first sign-in
+          // In production, replace with proper registration + password hashing
           console.log("[Auth] Creating new user:", email);
           user = await prisma.user.create({
             data: {
@@ -58,6 +44,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
           });
         }
+
+        // TODO: In production, verify hashed password here
+        // For demo purposes, any non-empty password is accepted
+        if (!password) return null;
 
         console.log("[Auth] User authenticated:", user.id);
 

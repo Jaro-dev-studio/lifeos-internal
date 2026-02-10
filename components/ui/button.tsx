@@ -8,14 +8,14 @@ import { cn } from "@/lib/utils";
 const buttonVariants = {
   variant: {
     primary:
-      "bg-primary text-primary-foreground hover:bg-primary-hover shadow-sm",
+      "bg-primary text-primary-foreground shadow-sm hover:opacity-90 active:opacity-80",
     secondary:
-      "bg-secondary text-secondary-foreground hover:bg-secondary-hover shadow-sm",
+      "bg-secondary text-secondary-foreground shadow-sm hover:opacity-90 active:opacity-80",
     outline:
-      "border border-border bg-background text-foreground hover:bg-muted hover:text-foreground",
-    ghost: "text-foreground hover:bg-muted hover:text-foreground",
+      "border border-border bg-background text-foreground shadow-sm hover:bg-muted",
+    ghost: "text-foreground hover:bg-muted",
     destructive:
-      "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm",
+      "bg-destructive text-destructive-foreground shadow-sm hover:opacity-90 active:opacity-80",
     link: "text-primary underline-offset-4 hover:underline",
   },
   size: {
@@ -35,49 +35,44 @@ export function getButtonStyles(
   className?: string
 ) {
   return cn(
-    "inline-flex items-center justify-center gap-2 font-medium transition-colors",
+    "inline-flex items-center justify-center gap-2 font-medium cursor-pointer transition-all",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-    "disabled:pointer-events-none disabled:opacity-50",
+    "disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed",
     buttonVariants.variant[variant],
     buttonVariants.size[size],
     className
   );
 }
 
-type ButtonBaseProps = {
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: keyof typeof buttonVariants.variant;
   size?: keyof typeof buttonVariants.size;
   isLoading?: boolean;
-};
-
-export type ButtonProps = ButtonBaseProps &
-  (
-    | (React.ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: false })
-    | (React.PropsWithChildren<{ asChild: true; className?: string }>)
-  );
+  asChild?: boolean;
+}
 
 /**
  * Primary button component with multiple variants and sizes.
- * Supports rendering as a child element via asChild prop.
  *
  * @example
  * <Button variant="primary" size="lg">Get Started</Button>
  * <Button variant="outline">Learn More</Button>
- * <Button asChild><Link href="/dashboard">Dashboard</Link></Button>
  */
-export function Button(props: ButtonProps) {
-  const {
-    variant = "primary",
-    size = "md",
-    isLoading = false,
-    className,
-    children,
-  } = props;
-
+export function Button({
+  variant = "primary",
+  size = "md",
+  isLoading = false,
+  asChild = false,
+  className,
+  children,
+  disabled,
+  ...rest
+}: ButtonProps) {
   const buttonClassName = getButtonStyles(variant, size, className);
 
   // Handle asChild - render children with button styles
-  if ("asChild" in props && props.asChild) {
+  if (asChild) {
     const child = React.Children.only(children) as React.ReactElement<{
       className?: string;
     }>;
@@ -86,14 +81,11 @@ export function Button(props: ButtonProps) {
     });
   }
 
-  // Regular button rendering
-  const { disabled, ...buttonProps } = props as React.ButtonHTMLAttributes<HTMLButtonElement> & ButtonBaseProps;
-
   return (
     <button
       className={buttonClassName}
       disabled={disabled || isLoading}
-      {...buttonProps}
+      {...rest}
     >
       {isLoading && (
         <svg

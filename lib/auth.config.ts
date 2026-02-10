@@ -1,6 +1,4 @@
 import type { NextAuthConfig } from "next-auth";
-import GitHub from "next-auth/providers/github";
-import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 
 /**
@@ -10,37 +8,23 @@ import Credentials from "next-auth/providers/credentials";
  */
 export const authConfig: NextAuthConfig = {
   providers: [
-    // GitHub OAuth (optional - requires GITHUB_ID and GITHUB_SECRET)
-    ...(process.env.GITHUB_ID && process.env.GITHUB_SECRET
-      ? [
-          GitHub({
-            clientId: process.env.GITHUB_ID,
-            clientSecret: process.env.GITHUB_SECRET,
-          }),
-        ]
-      : []),
-    // Google OAuth (optional - requires GOOGLE_ID and GOOGLE_SECRET)
-    ...(process.env.GOOGLE_ID && process.env.GOOGLE_SECRET
-      ? [
-          Google({
-            clientId: process.env.GOOGLE_ID,
-            clientSecret: process.env.GOOGLE_SECRET,
-          }),
-        ]
-      : []),
-    // Credentials provider for demo/development
+    // Credentials provider - must match the one in auth.ts
     Credentials({
-      name: "Demo Account",
+      name: "Credentials",
       credentials: {
         email: {
           label: "Email",
           type: "email",
-          placeholder: "demo@lifeos.app",
+          placeholder: "you@example.com",
+        },
+        password: {
+          label: "Password",
+          type: "password",
         },
       },
       async authorize() {
-        // In middleware context, we only validate the JWT token
-        // Actual credential validation happens in the full auth config
+        // In middleware context, we only validate the JWT token.
+        // Actual credential validation happens in the full auth config (auth.ts).
         return null;
       },
     }),
