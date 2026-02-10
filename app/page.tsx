@@ -7,107 +7,155 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar } from "@/components/ui/avatar";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import {
+  Activity,
+  TrendingUp,
+  TrendingDown,
+  Heart,
+  Wallet,
+  Moon,
+  MessageSquare,
+  Workflow,
+  Plus,
+} from "lucide-react";
+import Link from "next/link";
 
 /**
- * CUSTOMIZE: Dashboard statistics data
+ * Dashboard quick metrics - placeholder data
  */
-const dashboardStats = [
-  { label: "Total Revenue", value: "$45,231.89", change: "+20.1%", isPositive: true },
-  { label: "Subscriptions", value: "+2,350", change: "+180.1%", isPositive: true },
-  { label: "Active Users", value: "+12,234", change: "+19%", isPositive: true },
-  { label: "Conversion Rate", value: "3.2%", change: "-4.1%", isPositive: false },
+const quickMetrics = [
+  {
+    label: "Health Score",
+    value: "87",
+    unit: "/100",
+    change: "+3",
+    isPositive: true,
+    icon: Heart,
+    color: "text-red-500",
+  },
+  {
+    label: "Monthly Spending",
+    value: "$2,450",
+    unit: "",
+    change: "-12%",
+    isPositive: true,
+    icon: Wallet,
+    color: "text-green-500",
+  },
+  {
+    label: "Sleep Average",
+    value: "7.2",
+    unit: "hrs",
+    change: "+0.5",
+    isPositive: true,
+    icon: Moon,
+    color: "text-purple-500",
+  },
+  {
+    label: "Active Workflows",
+    value: "5",
+    unit: "",
+    change: "running",
+    isPositive: true,
+    icon: Workflow,
+    color: "text-blue-500",
+  },
 ];
 
 /**
- * CUSTOMIZE: Recent activity data
+ * Recent activity - placeholder data
  */
 const recentActivity = [
   {
-    user: "Sarah Chen",
-    action: "Created a new project",
-    project: "Marketing Campaign",
-    time: "2 minutes ago",
-    avatar: "SC",
+    type: "metric",
+    title: "Sleep logged",
+    description: "7.5 hours recorded",
+    time: "2 hours ago",
+    icon: Moon,
   },
   {
-    user: "Mike Johnson",
-    action: "Updated team settings",
-    project: "Development",
-    time: "1 hour ago",
-    avatar: "MJ",
+    type: "workflow",
+    title: "Daily sync completed",
+    description: "Health data synced from Fitbit",
+    time: "4 hours ago",
+    icon: Activity,
   },
   {
-    user: "Emily Brown",
-    action: "Invited a new member",
-    project: "Design System",
-    time: "3 hours ago",
-    avatar: "EB",
-  },
-  {
-    user: "Alex Rivera",
-    action: "Completed onboarding",
-    project: "Sales Team",
-    time: "5 hours ago",
-    avatar: "AR",
-  },
-  {
-    user: "Jordan Lee",
-    action: "Deployed to production",
-    project: "API v2.0",
+    type: "ai",
+    title: "AI insight generated",
+    description: "Weekly spending analysis ready",
     time: "Yesterday",
-    avatar: "JL",
+    icon: MessageSquare,
+  },
+  {
+    type: "metric",
+    title: "Budget updated",
+    description: "February budget set to $3,000",
+    time: "2 days ago",
+    icon: Wallet,
   },
 ];
 
 /**
- * CUSTOMIZE: Projects data
+ * Quick actions for the dashboard
  */
-const projects = [
-  { name: "Marketing Campaign", status: "active", progress: 75, members: 4 },
-  { name: "Product Launch", status: "active", progress: 45, members: 6 },
-  { name: "Customer Portal", status: "review", progress: 90, members: 3 },
-  { name: "Mobile App v2", status: "active", progress: 30, members: 5 },
+const quickActions = [
+  { label: "Log Metric", href: "/metrics", icon: Plus },
+  { label: "Start Chat", href: "/chat", icon: MessageSquare },
+  { label: "Run Workflow", href: "/workflows", icon: Workflow },
+  { label: "View Health", href: "/health", icon: Heart },
 ];
 
-/**
- * Dashboard home page - main view for signed-in users.
- * CUSTOMIZE: Update dashboard widgets, stats, and data.
- */
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session = await auth();
+
+  // Redirect to sign-in if not authenticated
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
+
+  const userName = session.user.name || session.user.email?.split("@")[0] || "User";
+
   return (
     <div className="p-6 space-y-6">
       {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Dashboard
+          Welcome back, {userName}
         </h1>
         <p className="text-muted-foreground">
-          {/* CUSTOMIZE: Update welcome message */}
-          Welcome back, John. Here&apos;s what&apos;s happening today.
+          Here&apos;s an overview of your life metrics and recent activity.
         </p>
       </div>
 
-      {/* Stats Grid */}
+      {/* Quick Metrics Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {dashboardStats.map((stat, index) => (
+        {quickMetrics.map((metric, index) => (
           <Card key={index}>
-            <CardHeader className="pb-2">
+            <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
               <CardDescription className="text-sm font-medium">
-                {stat.label}
+                {metric.label}
               </CardDescription>
+              <metric.icon className={`h-4 w-4 ${metric.color}`} />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
+              <div className="text-2xl font-bold">
+                {metric.value}
+                <span className="text-sm font-normal text-muted-foreground">
+                  {metric.unit}
+                </span>
+              </div>
               <p className="text-xs text-muted-foreground mt-1">
                 <span
                   className={
-                    stat.isPositive ? "text-accent" : "text-destructive"
+                    metric.isPositive ? "text-accent" : "text-destructive"
                   }
                 >
-                  {stat.change}
+                  {metric.change}
                 </span>{" "}
-                from last month
+                from last period
               </p>
             </CardContent>
           </Card>
@@ -115,173 +163,81 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-7">
-        {/* Projects Section */}
-        <Card className="lg:col-span-4">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Projects</CardTitle>
-              <CardDescription>
-                Your active projects and their progress.
-              </CardDescription>
-            </div>
-            <Button variant="outline" size="sm">
-              View All
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {projects.map((project, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between gap-4"
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium truncate">{project.name}</p>
-                      <Badge
-                        variant={
-                          project.status === "active" ? "accent" : "secondary"
-                        }
-                        className="text-xs"
-                      >
-                        {project.status}
-                      </Badge>
-                    </div>
-                    <div className="mt-2 flex items-center gap-2">
-                      <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-                        <div
-                          className="h-full bg-primary rounded-full transition-all"
-                          style={{ width: `${project.progress}%` }}
-                        />
-                      </div>
-                      <span className="text-xs text-muted-foreground w-10 text-right">
-                        {project.progress}%
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex -space-x-2">
-                    {Array.from({ length: Math.min(project.members, 3) }).map(
-                      (_, i) => (
-                        <Avatar key={i} size="sm" fallback={`U${i + 1}`} />
-                      )
-                    )}
-                    {project.members > 3 && (
-                      <Avatar
-                        size="sm"
-                        fallback={`+${project.members - 3}`}
-                      />
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Recent Activity */}
-        <Card className="lg:col-span-3">
+        <Card className="lg:col-span-4">
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
             <CardDescription>
-              Latest updates from your team.
+              Your latest metrics, workflows, and insights.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {recentActivity.map((item, index) => (
                 <div key={index} className="flex items-start gap-3">
-                  <Avatar fallback={item.avatar} size="sm" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
+                    <item.icon className="h-4 w-4 text-muted-foreground" />
+                  </div>
                   <div className="flex-1 min-w-0 space-y-1">
-                    <p className="text-sm">
-                      <span className="font-medium">{item.user}</span>{" "}
-                      <span className="text-muted-foreground">
-                        {item.action}
-                      </span>
-                    </p>
+                    <p className="text-sm font-medium">{item.title}</p>
                     <p className="text-xs text-muted-foreground">
-                      {item.project} &middot; {item.time}
+                      {item.description}
                     </p>
                   </div>
+                  <span className="text-xs text-muted-foreground whitespace-nowrap">
+                    {item.time}
+                  </span>
                 </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
+        <Card className="lg:col-span-3">
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>
+              Common tasks you can perform.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-3">
+              {quickActions.map((action, index) => (
+                <Link key={index} href={action.href}>
+                  <Button
+                    variant="outline"
+                    className="w-full h-auto py-4 flex flex-col items-center gap-2"
+                  >
+                    <action.icon className="h-5 w-5" />
+                    <span className="text-sm">{action.label}</span>
+                  </Button>
+                </Link>
               ))}
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Common tasks you can perform.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-3">
-            {/* CUSTOMIZE: Update quick action buttons */}
-            <Button variant="outline">
-              <svg
-                className="mr-2 h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
-              New Project
-            </Button>
-            <Button variant="outline">
-              <svg
-                className="mr-2 h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                />
-              </svg>
-              Invite Member
-            </Button>
-            <Button variant="outline">
-              <svg
-                className="mr-2 h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-              View Reports
-            </Button>
-            <Button variant="outline">
-              <svg
-                className="mr-2 h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-                />
-              </svg>
-              Export Data
-            </Button>
+      {/* AI Chat Prompt */}
+      <Card className="bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20">
+        <CardContent className="pt-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+              <MessageSquare className="h-6 w-6 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold">Chat with your data</h3>
+              <p className="text-sm text-muted-foreground">
+                Ask questions about your metrics, get insights, or run workflows using natural language.
+              </p>
+            </div>
+            <Link href="/chat">
+              <Button>
+                <MessageSquare className="mr-2 h-4 w-4" />
+                Start Chat
+              </Button>
+            </Link>
           </div>
         </CardContent>
       </Card>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
+import { SessionProvider } from "@/components/auth/session-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,18 +14,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-/**
- * CUSTOMIZE: Update metadata for client branding
- */
 export const metadata: Metadata = {
-  title: "DemoApp - Dashboard",
-  description: "Your product dashboard. Manage your projects, analytics, and team.",
-  keywords: ["dashboard", "product", "saas", "platform"],
+  title: "LifeOS - Your Life Operating System",
+  description: "Dashboard for your life. Track metrics, run workflows, chat with AI, and integrate all your data.",
+  keywords: ["life", "dashboard", "metrics", "ai", "workflows", "automation"],
 };
 
 /**
  * Root layout component with dashboard structure.
- * CUSTOMIZE: Update branding and navigation per client requirements.
  */
 export default function RootLayout({
   children,
@@ -36,7 +33,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} h-full bg-background font-sans antialiased`}
       >
-        <DashboardShell>{children}</DashboardShell>
+        <SessionProvider>
+          <DashboardShell>{children}</DashboardShell>
+        </SessionProvider>
       </body>
     </html>
   );
