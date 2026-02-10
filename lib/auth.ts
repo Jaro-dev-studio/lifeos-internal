@@ -24,31 +24,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!credentials?.email || !credentials?.password) return null;
 
         const email = credentials.email as string;
-        const password = credentials.password as string;
 
         console.log("[Auth] Looking up user:", email);
 
-        // Find existing user
-        let user = await prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
           where: { email },
         });
 
         if (!user) {
-          // For demo: auto-create user on first sign-in
-          // In production, replace with proper registration + password hashing
-          console.log("[Auth] Creating new user:", email);
-          user = await prisma.user.create({
-            data: {
-              email,
-              name: email.split("@")[0],
-            },
-          });
+          console.log("[Auth] User not found:", email);
+          return null;
         }
 
-        // TODO: In production, verify hashed password here
-        // For demo purposes, any non-empty password is accepted
-        if (!password) return null;
-
+        // TODO: verify hashed password here
         console.log("[Auth] User authenticated:", user.id);
 
         return {
