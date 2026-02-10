@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { SessionProvider } from "@/components/auth/session-provider";
 
 const geistSans = Geist({
@@ -16,12 +15,14 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "LifeOS - Your Life Operating System",
-  description: "Dashboard for your life. Track metrics, run workflows, chat with AI, and integrate all your data.",
+  description:
+    "Dashboard for your life. Track metrics, run workflows, chat with AI, and integrate all your data.",
   keywords: ["life", "dashboard", "metrics", "ai", "workflows", "automation"],
 };
 
 /**
- * Root layout component with dashboard structure.
+ * Root layout - provides HTML shell and session context.
+ * DashboardShell is applied at the (dashboard) route group level.
  */
 export default function RootLayout({
   children,
@@ -33,9 +34,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} h-full bg-background font-sans antialiased`}
       >
-        <SessionProvider>
-          <DashboardShell>{children}</DashboardShell>
-        </SessionProvider>
+        <SessionProvider>{children}</SessionProvider>
       </body>
     </html>
   );

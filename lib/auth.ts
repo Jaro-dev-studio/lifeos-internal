@@ -1,8 +1,8 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import Credentials from "next-auth/providers/credentials";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
-import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -30,20 +30,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Credentials({
       name: "Demo Account",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "demo@lifeos.app" },
+        email: {
+          label: "Email",
+          type: "email",
+          placeholder: "demo@lifeos.app",
+        },
       },
       async authorize(credentials) {
         // For demo purposes, create or find a demo user
         if (!credentials?.email) return null;
-        
+
         const email = credentials.email as string;
-        
+
+        console.log("[Auth] Looking up user:", email);
+
         // Find or create the user
         let user = await prisma.user.findUnique({
           where: { email },
         });
 
         if (!user) {
+          console.log("[Auth] Creating new user:", email);
           user = await prisma.user.create({
             data: {
               email,
@@ -51,6 +58,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
           });
         }
+
+        console.log("[Auth] User authenticated:", user.id);
 
         return {
           id: user.id,

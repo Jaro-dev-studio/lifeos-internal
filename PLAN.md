@@ -32,44 +32,44 @@ Workflows -> Trigger (Cron/Webhook/Manual) -> Actions -> Logging
 
 ### Phase 1: Foundation Setup
 1. [x] Initialize project structure (existing)
-2. [ ] Configure Prisma with NeonDB connection
-3. [ ] Set up NextAuth.js authentication
-4. [ ] Create base database schema (Users, Sessions, Accounts)
-5. [ ] Build authentication UI (sign-in, sign-out)
+2. [x] Configure Prisma with NeonDB connection
+3. [x] Set up NextAuth.js authentication
+4. [x] Create base database schema (Users, Sessions, Accounts)
+5. [x] Build authentication UI (sign-in, sign-out)
 
 ### Phase 2: Core Dashboard
-6. [ ] Update branding and layout for LifeOS
-7. [ ] Create widget system architecture
-8. [ ] Build dashboard widget grid layout
-9. [ ] Create metric card components
-10. [ ] Add user preferences/settings storage
+6. [x] Update branding and layout for LifeOS
+7. [x] Create widget system architecture
+8. [x] Build dashboard widget grid layout
+9. [x] Create metric card components
+10. [ ] Add user preferences/settings storage (theme, widget layout persistence)
 
 ### Phase 3: Metrics & Data
-11. [ ] Design metrics schema (flexible key-value with types)
-12. [ ] Build metric input/tracking UI
-13. [ ] Create metric visualization components (charts, graphs)
-14. [ ] Implement metric history and trends
+11. [x] Design metrics schema (flexible key-value with types)
+12. [x] Build metric input/tracking UI
+13. [x] Create metric visualization components (cards with trends)
+14. [ ] Implement metric history and trends (charts, time-series graphs)
 
 ### Phase 4: Workflows
-15. [ ] Design workflow schema (triggers, actions, conditions)
-16. [ ] Build workflow editor UI
-17. [ ] Implement cron job scheduler
-18. [ ] Create webhook endpoint system
-19. [ ] Add manual trigger execution
+15. [x] Design workflow schema (triggers, actions, conditions)
+16. [x] Build workflow editor UI
+17. [ ] Implement cron job scheduler (external scheduler integration)
+18. [x] Create webhook endpoint system
+19. [x] Add manual trigger execution
 
 ### Phase 5: AI Integration
-20. [ ] Set up OpenAI integration
-21. [ ] Build chat interface (text)
+20. [x] Set up OpenAI integration
+21. [x] Build chat interface (text)
 22. [ ] Implement speech-to-text input
 23. [ ] Create AI tool definition system
 24. [ ] Build tool execution engine
-25. [ ] Add conversation history storage
+25. [x] Add conversation history storage
 
 ### Phase 6: Integrations
-26. [ ] Design integration plugin system
-27. [ ] Create integration settings UI
-28. [ ] Build banking integration placeholder
-29. [ ] Build health data integration placeholder
+26. [x] Design integration plugin system
+27. [x] Create integration settings UI
+28. [ ] Build banking integration (Plaid)
+29. [ ] Build health data integration (Fitbit/Apple Health)
 30. [ ] Create custom integration builder
 
 ### Phase 7: Self-Extension
@@ -82,55 +82,71 @@ Workflows -> Trigger (Cron/Webhook/Manual) -> Actions -> Logging
 
 ```
 /workspace
-├── PLAN.md                          # This file
+├── PLAN.md                              # This file
+├── middleware.ts                         # Auth middleware (Edge Runtime)
 ├── prisma/
-│   └── schema.prisma                # Database schema
+│   └── schema.prisma                    # Database schema
 ├── app/
 │   ├── (auth)/
-│   │   ├── sign-in/page.tsx         # Sign in page
-│   │   └── sign-out/page.tsx        # Sign out page
+│   │   ├── layout.tsx                   # Minimal auth layout (no sidebar)
+│   │   └── sign-in/page.tsx             # Sign in page
+│   ├── (dashboard)/
+│   │   ├── layout.tsx                   # Dashboard shell layout (sidebar + header)
+│   │   ├── page.tsx                     # Dashboard home with real DB data
+│   │   ├── metrics/page.tsx             # Metrics CRUD with tracking
+│   │   ├── chat/page.tsx                # AI chat with OpenAI
+│   │   ├── workflows/page.tsx           # Workflow management with CRUD
+│   │   ├── integrations/page.tsx        # Integration management
+│   │   ├── health/page.tsx              # Health metrics (DB-backed)
+│   │   ├── finance/page.tsx             # Finance metrics (DB-backed)
+│   │   ├── activity/page.tsx            # Activity log (DB-backed)
+│   │   └── settings/page.tsx            # User settings with save
 │   ├── api/
-│   │   ├── auth/[...nextauth]/      # NextAuth API routes
-│   │   ├── webhooks/[id]/           # Webhook endpoints
-│   │   ├── metrics/                 # Metrics CRUD API
-│   │   ├── workflows/               # Workflows API
-│   │   └── chat/                    # AI chat API
-│   ├── dashboard/                   # Main dashboard (rename from /)
-│   ├── metrics/                     # Metrics tracking
-│   ├── workflows/                   # Workflow management
-│   ├── chat/                        # AI chat interface
-│   ├── integrations/                # Integration settings
-│   ├── settings/                    # User settings
-│   ├── layout.tsx                   # Root layout with auth
-│   ├── page.tsx                     # Home/landing or redirect
-│   └── globals.css                  # Global styles
+│   │   ├── auth/[...nextauth]/route.ts  # NextAuth API routes
+│   │   ├── webhooks/[id]/route.ts       # Webhook endpoints
+│   │   └── chat/route.ts               # AI chat API (OpenAI)
+│   ├── layout.tsx                       # Root layout (HTML + SessionProvider)
+│   └── globals.css                      # Global styles with CSS variables
 ├── components/
 │   ├── auth/
-│   │   └── auth-button.tsx          # Auth button component
-│   ├── dashboard/
-│   │   ├── widget-grid.tsx          # Widget grid layout
-│   │   ├── metric-card.tsx          # Metric display card
-│   │   └── quick-actions.tsx        # Quick action buttons
+│   │   ├── session-provider.tsx         # NextAuth session wrapper
+│   │   ├── sign-in-form.tsx             # Sign-in form component
+│   │   └── user-button.tsx              # User avatar dropdown
 │   ├── chat/
-│   │   ├── chat-interface.tsx       # Main chat UI
-│   │   ├── message-bubble.tsx       # Chat message
-│   │   └── voice-input.tsx          # Speech input
+│   │   └── chat-interface.tsx           # Full chat UI with streaming
+│   ├── metrics/
+│   │   ├── create-metric-form.tsx       # Create metric form
+│   │   ├── log-entry-form.tsx           # Log metric entry form
+│   │   └── metrics-client.tsx           # Metrics page client wrapper
 │   ├── workflows/
-│   │   ├── workflow-editor.tsx      # Workflow builder
-│   │   └── workflow-card.tsx        # Workflow display
-│   ├── layout/                      # Existing layout components
-│   └── ui/                          # Existing UI components
+│   │   └── workflows-client.tsx         # Workflows page client wrapper
+│   ├── settings/
+│   │   └── settings-client.tsx          # Settings page client wrapper
+│   ├── layout/
+│   │   ├── dashboard-shell.tsx          # Shell with sidebar + header
+│   │   ├── header.tsx                   # Dashboard header
+│   │   └── sidebar.tsx                  # Sidebar navigation
+│   └── ui/                              # UI primitives
+│       ├── avatar.tsx
+│       ├── badge.tsx
+│       ├── button.tsx
+│       ├── card.tsx
+│       ├── input.tsx
+│       └── skeleton.tsx
 ├── lib/
-│   ├── auth.ts                      # NextAuth configuration
-│   ├── prisma.ts                    # Prisma client
+│   ├── auth.ts                          # NextAuth config (with Prisma adapter)
+│   ├── auth.config.ts                   # Edge-compatible auth config (no Prisma)
+│   ├── prisma.ts                        # Prisma client singleton
+│   ├── utils.ts                         # Utility functions (cn)
 │   ├── ai/
-│   │   ├── openai.ts                # OpenAI client
-│   │   └── tools.ts                 # AI tool definitions
-│   └── utils.ts                     # Utility functions
+│   │   └── openai.ts                    # OpenAI client (lazy-init)
+│   └── actions/
+│       ├── metrics.ts                   # Metrics server actions (CRUD + entries)
+│       ├── workflows.ts                 # Workflows server actions (CRUD + run)
+│       ├── chat.ts                      # Chat server actions (conversations)
+│       └── settings.ts                  # Settings server actions (profile)
 └── types/
-    ├── index.ts                     # Shared types
-    ├── metrics.ts                   # Metric types
-    └── workflows.ts                 # Workflow types
+    └── next-auth.d.ts                   # NextAuth type extensions
 ```
 
 ## Database Schema Overview
@@ -150,18 +166,28 @@ Workflows -> Trigger (Cron/Webhook/Manual) -> Actions -> Logging
 - **ChatMessage**: Individual chat messages
 - **Integration**: Connected services
 - **CustomTool**: User-defined AI tools
+- **DashboardWidget**: User dashboard configuration
 
 ## Key Decisions
 
 ### 1. Authentication Strategy
-**Decision**: Use NextAuth.js with database sessions
+**Decision**: Use NextAuth.js with JWT sessions + Prisma adapter
 **Rationale**: 
 - Industry standard for Next.js authentication
+- JWT sessions allow Edge Runtime middleware
+- Separate auth.config.ts for middleware (Edge-compatible)
+- Full auth.ts with Prisma adapter for server-side DB operations
 - Supports multiple providers (email, OAuth)
-- Database sessions allow for server-side session management
-- Easy to add new providers later
 
-### 2. Database Choice
+### 2. Route Group Architecture
+**Decision**: Use Next.js route groups `(auth)` and `(dashboard)`
+**Rationale**:
+- `(auth)` group: Minimal layout without sidebar/header for sign-in pages
+- `(dashboard)` group: Full DashboardShell layout with sidebar/header
+- Root layout only provides HTML shell and SessionProvider
+- Clean separation of authenticated vs unauthenticated layouts
+
+### 3. Database Choice
 **Decision**: NeonDB (Serverless PostgreSQL) with Prisma
 **Rationale**:
 - Serverless scales automatically
@@ -169,26 +195,29 @@ Workflows -> Trigger (Cron/Webhook/Manual) -> Actions -> Logging
 - Prisma provides type-safe database access
 - Easy to self-host PostgreSQL if needed later
 
-### 3. AI Tool Execution
-**Decision**: Server-side tool execution with defined schemas
+### 4. AI Chat Architecture
+**Decision**: API route with lazy OpenAI client + conversation history
 **Rationale**:
-- Security: Tools run on server, not client
-- Control: Can limit what tools AI can execute
-- Extensibility: Users can define new tools with JSON schemas
+- API route for non-blocking chat requests
+- Lazy OpenAI initialization to gracefully handle missing API key
+- Conversation history stored in DB for context
+- User metrics injected as system context for personalized responses
 
-### 4. Widget System
-**Decision**: React Server Components with client interactivity
+### 5. Server Actions for CRUD
+**Decision**: Server actions for all CRUD operations
 **Rationale**:
-- Server-side data fetching for performance
-- Client components only where needed (interactions)
-- Easy to add new widget types
+- Type-safe with TypeScript
+- Automatic revalidation with revalidatePath
+- Built-in auth checking in each action
+- No need for separate API routes for standard operations
 
-### 5. Workflow Triggers
-**Decision**: Support cron, webhook, and manual triggers
+### 6. Workflow Triggers
+**Decision**: Support cron, webhook, manual, and event triggers
 **Rationale**:
 - Cron: Scheduled tasks (daily reports, etc.)
-- Webhook: External service integrations
+- Webhook: External service integrations (with dedicated API route)
 - Manual: User-initiated workflows
+- Event: Triggered by internal system events
 - All use same action execution system
 
 ## Environment Variables Required
@@ -217,22 +246,28 @@ PLAID_SECRET=""
 
 ## Current Progress
 
-- [x] Base Next.js project structure
-- [x] TailwindCSS configuration
-- [x] Basic UI components (Button, Card, Input, etc.)
-- [x] Dashboard layout with sidebar
-- [x] Prisma setup with NeonDB PostgreSQL schema
+- [x] Base Next.js 16 project structure with App Router
+- [x] TailwindCSS 4 configuration with CSS variable theming
+- [x] Basic UI components (Button, Card, Input, Badge, Avatar, Skeleton)
+- [x] Route group architecture: (auth) and (dashboard) layouts
+- [x] Sign-in page renders outside dashboard (no sidebar/header)
+- [x] Dashboard layout with sidebar navigation and header
+- [x] Prisma setup with NeonDB PostgreSQL + driver adapter
 - [x] NextAuth configuration with credentials and OAuth providers
-- [x] Database schema (User, Account, Session, Metric, Workflow, Chat, Integration, CustomTool)
+- [x] Edge-compatible middleware for auth route protection
+- [x] Database schema (User, Account, Session, Metric, Workflow, Chat, Integration, CustomTool, DashboardWidget)
 - [x] Authentication flow (sign-in page, user button, session provider)
 - [x] LifeOS branding and navigation
-- [x] Dashboard page with metrics overview
-- [x] Metrics page placeholder
-- [x] AI Chat page placeholder
-- [x] Workflows page placeholder
-- [x] Integrations page placeholder
-- [x] Health tracking page placeholder
-- [x] Finance tracking page placeholder
-- [x] Activity log page placeholder
-- [x] Settings page placeholder
+- [x] Dashboard page with real DB data (metrics count, workflow count, recent entries)
+- [x] Metrics page - full CRUD (create, delete, log entries with dates/notes)
+- [x] AI Chat page - full chat interface with OpenAI integration and conversation history
+- [x] Workflows page - full CRUD (create, toggle, run, delete with trigger types)
+- [x] Integrations page - integration catalog with DB-backed status
+- [x] Health tracking page - DB-backed health metrics
+- [x] Finance tracking page - DB-backed finance metrics
+- [x] Activity log page - real activity from metric entries and workflow runs
+- [x] Settings page - profile editing with save to DB
+- [x] Server actions for metrics, workflows, chat, and settings
+- [x] Chat API route with OpenAI (graceful fallback when no API key)
+- [x] Webhook API endpoint for external integrations
 - [x] Build verification passed
