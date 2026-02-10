@@ -3,30 +3,31 @@
 import * as React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Avatar } from "@/components/ui/avatar";
+import { UserButton } from "@/components/auth/user-button";
+import { Bell, Zap } from "lucide-react";
 
 /**
- * CUSTOMIZE: Notification data
+ * Notification data - placeholder for real notifications
  */
 const notifications = [
   {
     id: 1,
-    title: "New project created",
-    description: "Sarah created 'Marketing Campaign'",
+    title: "Workflow completed",
+    description: "Daily health sync finished",
     time: "2 min ago",
     unread: true,
   },
   {
     id: 2,
-    title: "Team member joined",
-    description: "Alex Rivera joined your team",
+    title: "New metric recorded",
+    description: "Sleep tracked: 7.5 hours",
     time: "1 hour ago",
     unread: true,
   },
   {
     id: 3,
-    title: "Document shared",
-    description: "Mike shared 'Q4 Strategy' with you",
+    title: "AI insight available",
+    description: "Weekly spending analysis ready",
     time: "3 hours ago",
     unread: false,
   },
@@ -46,7 +47,6 @@ export interface HeaderProps {
  * CUSTOMIZE: Update logo and user information per client.
  */
 export function Header({ className, onMobileMenuToggle, isMobileMenuOpen }: HeaderProps) {
-  const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = React.useState(false);
 
   const unreadCount = notifications.filter((n) => n.unread).length;
@@ -99,13 +99,13 @@ export function Header({ className, onMobileMenuToggle, isMobileMenuOpen }: Head
             )}
           </button>
 
-          {/* CUSTOMIZE: Replace with client logo */}
+          {/* LifeOS Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <span className="text-sm font-bold text-primary-foreground">D</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent">
+              <Zap className="h-5 w-5 text-white" />
             </div>
             <span className="text-lg font-semibold text-foreground">
-              DemoApp
+              LifeOS
             </span>
           </Link>
         </div>
@@ -117,25 +117,10 @@ export function Header({ className, onMobileMenuToggle, isMobileMenuOpen }: Head
             <button
               type="button"
               className="relative flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-              onClick={() => {
-                setIsNotificationsOpen(!isNotificationsOpen);
-                setIsUserMenuOpen(false);
-              }}
+              onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
               aria-label="Notifications"
             >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                />
-              </svg>
+              <Bell className="h-5 w-5" />
               {/* Notification badge */}
               {unreadCount > 0 && (
                 <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-medium text-white">
@@ -216,111 +201,7 @@ export function Header({ className, onMobileMenuToggle, isMobileMenuOpen }: Head
           </div>
 
           {/* User Menu */}
-          <div className="relative">
-            <button
-              type="button"
-              className="flex items-center gap-2 rounded-lg p-1.5 transition-colors hover:bg-muted"
-              onClick={() => {
-                setIsUserMenuOpen(!isUserMenuOpen);
-                setIsNotificationsOpen(false);
-              }}
-              aria-expanded={isUserMenuOpen}
-              aria-haspopup="true"
-            >
-              {/* CUSTOMIZE: Update with actual user data */}
-              <Avatar fallback="JD" size="sm" />
-              <div className="hidden text-left md:block">
-                <p className="text-sm font-medium text-foreground">John Doe</p>
-                <p className="text-xs text-muted-foreground">john@example.com</p>
-              </div>
-              <svg
-                className={cn(
-                  "h-4 w-4 text-muted-foreground transition-transform",
-                  isUserMenuOpen && "rotate-180"
-                )}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-
-            {/* Dropdown Menu */}
-            {isUserMenuOpen && (
-              <>
-                {/* Backdrop to close menu */}
-                <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setIsUserMenuOpen(false)}
-                />
-                <div className="absolute right-0 z-20 mt-2 w-56 rounded-lg border border-border bg-background py-1 shadow-lg">
-                  <div className="border-b border-border px-4 py-3 md:hidden">
-                    <p className="text-sm font-medium text-foreground">
-                      John Doe
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      john@example.com
-                    </p>
-                  </div>
-                  {/* CUSTOMIZE: Update dropdown menu items */}
-                  <Link
-                    href="/settings"
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted"
-                    onClick={() => setIsUserMenuOpen(false)}
-                  >
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                    Settings
-                  </Link>
-                  <div className="border-t border-border mt-1 pt-1">
-                    <button
-                      type="button"
-                      className="flex w-full items-center gap-2 px-4 py-2 text-sm text-destructive hover:bg-muted"
-                      onClick={() => setIsUserMenuOpen(false)}
-                    >
-                      <svg
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                        />
-                      </svg>
-                      Sign out
-                    </button>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+          <UserButton />
         </div>
       </div>
     </header>

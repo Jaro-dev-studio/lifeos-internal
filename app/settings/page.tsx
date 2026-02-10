@@ -7,178 +7,108 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar } from "@/components/ui/avatar";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { User, Bell, Shield, Palette, Database, Key } from "lucide-react";
 
-/**
- * Settings page - manage account and preferences.
- * CUSTOMIZE: Update settings sections per client requirements.
- */
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const session = await auth();
+
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
+
+  const settingsSections = [
+    {
+      title: "Profile",
+      description: "Manage your account details",
+      icon: User,
+      fields: [
+        { label: "Name", value: session.user.name || "", type: "text" },
+        { label: "Email", value: session.user.email || "", type: "email", disabled: true },
+      ],
+    },
+    {
+      title: "Notifications",
+      description: "Configure how you receive updates",
+      icon: Bell,
+      fields: [],
+    },
+    {
+      title: "Privacy & Security",
+      description: "Manage your security settings",
+      icon: Shield,
+      fields: [],
+    },
+    {
+      title: "Appearance",
+      description: "Customize the look and feel",
+      icon: Palette,
+      fields: [],
+    },
+    {
+      title: "Data & Export",
+      description: "Export your data or delete your account",
+      icon: Database,
+      fields: [],
+    },
+    {
+      title: "API Keys",
+      description: "Manage your API keys for integrations",
+      icon: Key,
+      fields: [],
+    },
+  ];
+
   return (
-    <div className="p-6 space-y-6 max-w-4xl">
-      {/* Page Header */}
+    <div className="p-6 space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
           Settings
         </h1>
         <p className="text-muted-foreground">
-          Manage your account settings and preferences.
+          Manage your account and application preferences.
         </p>
       </div>
 
-      {/* Profile Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Profile</CardTitle>
-          <CardDescription>
-            Your personal information and profile settings.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Avatar */}
-          <div className="flex items-center gap-4">
-            <Avatar fallback="JD" size="xl" />
-            <div>
-              <Button variant="outline" size="sm">
-                Change Avatar
-              </Button>
-              <p className="mt-1 text-xs text-muted-foreground">
-                JPG, PNG or GIF. Max 2MB.
-              </p>
-            </div>
-          </div>
-
-          {/* Form Fields */}
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Input
-              label="First Name"
-              defaultValue="John"
-              placeholder="Enter first name"
-            />
-            <Input
-              label="Last Name"
-              defaultValue="Doe"
-              placeholder="Enter last name"
-            />
-            <Input
-              label="Email"
-              type="email"
-              defaultValue="john@example.com"
-              placeholder="Enter email"
-              className="sm:col-span-2"
-            />
-          </div>
-
-          <div className="flex justify-end">
-            <Button>Save Changes</Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Notifications Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Notifications</CardTitle>
-          <CardDescription>
-            Configure how you receive notifications.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[
-              {
-                title: "Email Notifications",
-                description: "Receive email updates about your account.",
-              },
-              {
-                title: "Push Notifications",
-                description: "Receive push notifications on your devices.",
-              },
-              {
-                title: "Weekly Digest",
-                description: "Get a weekly summary of your activity.",
-              },
-            ].map((item, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between py-2"
-              >
-                <div>
-                  <p className="font-medium">{item.title}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {item.description}
-                  </p>
+      <div className="grid gap-6">
+        {settingsSections.map((section, index) => (
+          <Card key={index}>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                  <section.icon className="h-5 w-5 text-muted-foreground" />
                 </div>
-                {/* Toggle Switch Placeholder */}
-                <button
-                  type="button"
-                  className="relative h-6 w-11 rounded-full bg-primary transition-colors"
-                  role="switch"
-                  aria-checked="true"
-                >
-                  <span className="absolute right-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform" />
-                </button>
+                <div>
+                  <CardTitle className="text-lg">{section.title}</CardTitle>
+                  <CardDescription>{section.description}</CardDescription>
+                </div>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Security Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Security</CardTitle>
-          <CardDescription>
-            Manage your password and security settings.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Input
-              label="Current Password"
-              type="password"
-              placeholder="Enter current password"
-            />
-            <div /> {/* Spacer */}
-            <Input
-              label="New Password"
-              type="password"
-              placeholder="Enter new password"
-            />
-            <Input
-              label="Confirm Password"
-              type="password"
-              placeholder="Confirm new password"
-            />
-          </div>
-
-          <div className="flex justify-end">
-            <Button variant="outline">Update Password</Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Danger Zone */}
-      <Card className="border-destructive/50">
-        <CardHeader>
-          <CardTitle className="text-destructive">Danger Zone</CardTitle>
-          <CardDescription>
-            Irreversible actions for your account.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">Delete Account</p>
-              <p className="text-sm text-muted-foreground">
-                Permanently delete your account and all data.
-              </p>
-            </div>
-            <Button variant="destructive">Delete Account</Button>
-          </div>
-        </CardContent>
-      </Card>
+            </CardHeader>
+            <CardContent>
+              {section.fields.length > 0 ? (
+                <div className="space-y-4">
+                  {section.fields.map((field, fieldIndex) => (
+                    <div key={fieldIndex} className="grid gap-2">
+                      <label className="text-sm font-medium">{field.label}</label>
+                      <Input
+                        type={field.type}
+                        defaultValue={field.value}
+                        disabled={field.disabled}
+                      />
+                    </div>
+                  ))}
+                  <Button>Save Changes</Button>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Settings coming soon. Connect your database to enable this feature.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
-
